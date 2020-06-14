@@ -2,7 +2,8 @@
 
   "config": {
     "brokerHost":"192.168.0.101",
-    "brokerPort":"1883"
+    "brokerPort":"1883",
+    "id": "sensor_id_"
   },
   "topics": {
     "subscribe": [
