@@ -47,5 +47,8 @@ class MQTTClient(object):
         self.client.connect(self.hostname, self.port, 60)
         self.client.loop_start()
 
+    def finalize(self):
+        self.client.loop_stop()
+
     def _on_subscribe(self, client, userdata, mid, granted_qos):
         print("Subscribed: " + str(mid) + " " + str(granted_qos))

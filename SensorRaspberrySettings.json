@@ -1,0 +1,12 @@
+{
+
+  "config": {
+    "brokerHost":"192.168.0.101",
+    "brokerPort":"1883"
+  },
+  "topics": {
+    "publish": [
+      "sensor/personRecognition"
+    ]
+  }
+}
