@@ -16,17 +16,10 @@ import subprocess
 from PIL import Image
 import tensorflow as tf
 from datetime import datetime
-import base64
 
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
 
-import pyrebase
-
-import UploadVideo as VideoManager
-from BuzzerManager import BuzzerManager
-from MenuOption import MenuOption
-from mbp_client import MBPclient
 from MQTTClientSerializer import MQTTClientSerializer
 from MQTTMessageManager import MQTTMessageManager
 
@@ -113,11 +106,11 @@ def main():
                 if personWasDetected(results) and recognition_turned_on:
                     print("PERSON WAS DETECTED")
                     message = '{"value": "%.2f"}' % 1.0
-                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False))
+                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
                 else:
                     print("PERSON NOT DETECTED")
                     message = '{"value": "%.2f"}' % 0.0
-                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False))
+                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
 
                 stream.seek(0)
                 stream.truncate()
