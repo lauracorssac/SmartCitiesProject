@@ -1,0 +1,4 @@
+# Python packages required for Action Raspberry
+numpy
+paho-mqtt
+RPi.GPIO
