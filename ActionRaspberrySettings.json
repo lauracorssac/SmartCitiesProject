@@ -3,11 +3,12 @@
   "config": {
     "brokerHost":"192.168.0.101",
     "brokerPort":"1883",
-    "id": "sensor_id_"
+    "id": "rasp_action_id_"
   },
   "topics": {
+    "publish": []
     "subscribe": [
-      "sensor/personRecognition"
+      "action/buzzer"
     ]
   }
 }
