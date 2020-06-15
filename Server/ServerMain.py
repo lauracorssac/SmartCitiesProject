@@ -3,7 +3,7 @@ import sys
 import time
 
 from MQTTClientSerializer import MQTTClientSerializer
-from MQTTMessageManager import MQTTMessageManager
+from ServerMQTTMessageManager import ServerMQTTMessageManager
 
 
 def main(argv):
