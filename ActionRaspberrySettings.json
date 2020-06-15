@@ -6,9 +6,7 @@
     "id": "rasp_action_id_"
   },
   "topics": {
-    "publish": []
-    "subscribe": [
-      "action/buzzer"
-    ]
+    "publish": [],
+    "subscribe": [ "action/buzzer" ]
   }
 }
