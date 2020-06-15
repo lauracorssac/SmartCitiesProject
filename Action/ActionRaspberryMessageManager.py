@@ -1,5 +1,4 @@
 import json
-
 from BuzzerManager import BuzzerManager
 
 class ActionRaspberryMessageManager(object):

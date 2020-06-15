@@ -1,6 +1,6 @@
 import json
 
-class MQTTMessageManager(object):
+class ServerMQTTMessageManager(object):
 
     def __init__(self, client):
 

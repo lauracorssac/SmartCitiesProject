@@ -1,5 +1,9 @@
+import sys
+import os
 
-from MQTTClient import MQTTClient
+sys.path.insert(1, os.path.dirname(os.getcwd()))
+
+from Common.MQTTClient import MQTTClient
 import json
 from datetime import datetime
 

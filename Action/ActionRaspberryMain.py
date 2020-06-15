@@ -1,9 +1,11 @@
-from datetime import datetime
-from MQTTClientSerializer import MQTTClientSerializer
-from MQTTMessageManager import MQTTMessageManager
-from ActionRaspberryMessageManager import ActionRaspberryMessageManager
-
 import time
+from datetime import datetime
+import sys
+import os
+sys.path.insert(1, os.path.dirname(os.getcwd()))
+
+from Common.MQTTClientSerializer import MQTTClientSerializer
+from ActionRaspberryMessageManager import ActionRaspberryMessageManager
 
 def main():
 

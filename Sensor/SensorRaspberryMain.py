@@ -8,6 +8,7 @@ import io
 import re
 import time
 import sys
+import os
 
 import numpy as np
 import picamera
@@ -20,8 +21,10 @@ from datetime import datetime
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
 
-from MQTTClientSerializer import MQTTClientSerializer
-from MQTTMessageManager import MQTTMessageManager
+sys.path.insert(1, os.path.dirname(os.getcwd()))
+
+from Common.MQTTClientSerializer import MQTTClientSerializer
+#from Common.MQTTMessageManager import MQTTMessageManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
 recognition_turned_on = True
@@ -92,7 +95,7 @@ def main():
     serializer = MQTTClientSerializer()
     mqtt_client = serializer.initialize_from_json(property_file_name)
     mqtt_client.start()
-    manager = MQTTMessageManager(mqtt_client)
+    #manager = MQTTMessageManager(mqtt_client)
 
     while True:
         try:
