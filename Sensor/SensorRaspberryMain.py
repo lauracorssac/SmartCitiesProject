@@ -10,7 +10,6 @@ import time
 import sys
 import os
 
-import numpy as np
 import picamera
 import subprocess
 
@@ -24,10 +23,11 @@ CAMERA_HEIGHT = 480
 sys.path.insert(1, os.path.dirname(os.getcwd()))
 
 from Common.MQTTClientSerializer import MQTTClientSerializer
-#from Common.MQTTMessageManager import MQTTMessageManager
+from ImageRecognitionManager import ImageRecognitionManager
+from PIRManager import PIRManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
-recognition_turned_on = True
+recognition_turned_on = False
 
 def personWasDetected(results):
     for result in results:
@@ -35,43 +35,14 @@ def personWasDetected(results):
             return True
     return False
 
-def updatePersonDetectedStatus(status):
-    data = {"personDetected": status}
-    db.child("raspberryData").set(data)
+ #function called when a notification of a new menu action is received by mbp client
+def motion_recognized_callback():
 
-def set_input_tensor(interpreter, image):
-  """Sets the input tensor."""
-  tensor_index = interpreter.get_input_details()[0]['index']
-  input_tensor = interpreter.tensor(tensor_index)()[0]
-  input_tensor[:, :] = image
+    print("motion_recognized_callback")
 
-def get_output_tensor(interpreter, index):
-  """Returns the output tensor at the given index."""
-  output_details = interpreter.get_output_details()[index]
-  tensor = np.squeeze(interpreter.get_tensor(output_details['index']))
-  return tensor
+    global recognition_turned_on
+    recognition_turned_on = True
 
-def detect_objects(interpreter, image, threshold):
-  """Returns a list of detection results, each a dictionary of object info."""
-  set_input_tensor(interpreter, image)
-  interpreter.invoke()
-
-  # Get all output details
-  boxes = get_output_tensor(interpreter, 0)
-  classes = get_output_tensor(interpreter, 1)
-  scores = get_output_tensor(interpreter, 2)
-  count = int(get_output_tensor(interpreter, 3))
-
-  results = []
-  for i in range(count):
-    if scores[i] >= threshold:
-      result = {
-          'bounding_box': boxes[i],
-          'class_id': classes[i],
-          'score': scores[i]
-      }
-      results.append(result)
-  return results
 
 def main():
 
@@ -95,7 +66,9 @@ def main():
     serializer = MQTTClientSerializer()
     mqtt_client = serializer.initialize_from_json(property_file_name)
     mqtt_client.start()
-    #manager = MQTTMessageManager(mqtt_client)
+
+    image_rec_manager = ImageRecognitionManager()
+    pir_manager = PIRManager(motion_recognized_callback)
 
     while True:
         try:
@@ -105,7 +78,7 @@ def main():
                 capture = camera.capture(stream, format='jpeg', use_video_port=True)
                 stream.seek(0)
                 image = Image.open(stream).convert('RGB').resize((input_width, input_height), Image.ANTIALIAS)
-                results = detect_objects(interpreter, image, args.threshold)
+                results = image_rec_manager.detect_objects(interpreter, image, args.threshold)
                 if personWasDetected(results) and recognition_turned_on:
                     print("PERSON WAS DETECTED")
                     message = '{"value": "%.2f"}' % 1.0

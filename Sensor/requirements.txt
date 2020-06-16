@@ -1,3 +1,4 @@
 # Python packages required for Sensor Raspberry
 numpy
 paho-mqtt
+RPi.GPIO

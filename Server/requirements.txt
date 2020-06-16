@@ -1,3 +1,2 @@
 # Python packages required for Server
-numpy
 paho-mqtt
