@@ -1,7 +1,7 @@
 {
 
   "config": {
-    "brokerHost":"192.168.0.101",
+    "brokerHost":"192.168.0.100",
     "brokerPort":"1883",
     "id": "rasp_action_id_"
   },
