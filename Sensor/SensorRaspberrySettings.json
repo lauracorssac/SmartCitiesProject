@@ -9,6 +9,8 @@
     "publish": [
       "sensor/personRecognition"
     ],
-    "subscribe": []
+    "subscribe": [
+      "action/shutDown"
+    ]
   }
 }

@@ -1,4 +1,5 @@
 import json
+import sys
 
 class ServerMQTTMessageManager(object):
 
@@ -22,3 +23,5 @@ class ServerMQTTMessageManager(object):
             if new_value == 1.0:
                 action_message = '{"action": "%.2f"}' % 1.0
                 self.client.publish("action/buzzer", action_message, 0, False)
+                self.client.publish("action/shutDown", action_message, 0, False)
+                sys.exit(0)

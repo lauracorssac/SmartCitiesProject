@@ -18,7 +18,11 @@ def main(argv):
     manager = ServerMQTTMessageManager(mqtt_client)
 
     while True:
-        time.sleep(5)
+        try:
+            time.sleep(5)
+        except:
+            mqtt_client.finalize()
+            return
 
 # Call main function
 if __name__ == "__main__":

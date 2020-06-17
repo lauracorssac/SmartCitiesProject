@@ -24,7 +24,9 @@ sys.path.insert(1, os.path.dirname(os.getcwd()))
 
 from Common.MQTTClientSerializer import MQTTClientSerializer
 from ImageRecognitionManager import ImageRecognitionManager
+from SensorRaspberryMessageManager import SensorRaspberryMessageManager
 from PIRManager import PIRManager
+from Common.IoTGeneralManager import IoTGeneralManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
 recognition_turned_on = True
@@ -42,7 +44,6 @@ def motion_recognized_callback():
 
     global recognition_turned_on
     recognition_turned_on = True
-
 
 def main():
 
@@ -67,8 +68,11 @@ def main():
     mqtt_client = serializer.initialize_from_json(property_file_name)
     mqtt_client.start()
 
+    iot_manager = IoTGeneralManager()
+    iot_manager.start()
     image_rec_manager = ImageRecognitionManager()
     pir_manager = PIRManager(motion_recognized_callback)
+    message_manager = SensorRaspberryMessageManager(mqtt_client)
 
     while True:
         try:
@@ -92,10 +96,12 @@ def main():
                 stream.truncate()
 
         except:
+            print("ending program")
             error = sys.exc_info()
             print ('Error:', str(error))
             break
 
+    iot_manager.stop()
     mqtt_client.finalize()
     camera.close()
     return

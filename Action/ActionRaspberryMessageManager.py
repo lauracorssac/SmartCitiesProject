@@ -1,4 +1,5 @@
 import json
+import sys
 from BuzzerManager import BuzzerManager
 from LightManager import LightManager
 
@@ -25,3 +26,6 @@ class ActionRaspberryMessageManager(object):
             if new_value == 1.0:
                 self.buzzer_manager.buzzAct()
                 self.light_manager.turn_light_on()
+
+        if message.topic == "action/shutDown":
+            sys.exit(0)

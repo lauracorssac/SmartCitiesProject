@@ -10,8 +10,6 @@ class BuzzerManager(object):
         return
 
     def buzzer_setup(self):
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
         GPIO.setup(PD, GPIO.OUT)
         GPIO.output(PD, 0)
 
