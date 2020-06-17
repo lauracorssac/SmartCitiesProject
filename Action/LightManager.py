@@ -12,19 +12,17 @@ LED_CHANNEL = 1
 # LED_STRIP = ws.SK6812_STRIP_RGBW
 LED_STRIP = ws.SK6812W_STRIP
 
-
-PIN = 26 #DATA PIN
-
 class LightManager(object):
 
     def __init__(self):
+        self.strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
         self.setup()
-        return
 
     def setup(self):
-        strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
-        strip.begin()
-        strip.setPixelColor(0, Color(0, 0, 0))
-        
+        self.strip.begin()
+        self.strip.setPixelColor(0, Color(0, 0, 0))
+        self.strip.show()
+
     def turn_light_on(self):
-        strip.setPixelColor(0, Color(255, 0, 0))
+        self.strip.setPixelColor(0, Color(0, 255, 0))
+        self.strip.show()
