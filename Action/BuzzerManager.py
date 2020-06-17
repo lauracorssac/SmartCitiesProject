@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-import paho.mqtt.client as mqtt
 
 PD = 15 #DATA PIN
 

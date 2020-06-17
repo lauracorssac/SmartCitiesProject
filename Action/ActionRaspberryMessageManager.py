@@ -1,12 +1,14 @@
 import json
 from BuzzerManager import BuzzerManager
+from LightManager import LightManager
 
 class ActionRaspberryMessageManager(object):
-    def __init__(self, client):
 
+    def __init__(self, client):
         self.client = client
         self.client.message_handler = self.on_message_handler
         self.buzzer_manager = BuzzerManager()
+        self.light_manager = LightManager()
 
     def on_message_handler(self, message):
         # Convert message payload to string
@@ -22,3 +24,4 @@ class ActionRaspberryMessageManager(object):
 
             if new_value == 1.0:
                 self.buzzer_manager.buzzAct()
+                self.light_manager.turn_light_on()
