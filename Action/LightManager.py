@@ -22,16 +22,9 @@ class LightManager(object):
         return
 
     def setup(self):
-        #GPIO.setmode(GPIO.BCM)
-        #GPIO.setup(PIN, GPIO.OUT)
         strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
         strip.begin()
-        while True:
-            strip.setPixelColor(0, Color(255, 0, 0))
-            strip.show()
-            time.sleep(5)
-            strip.setPixelColor(0, Color(0, 255, 0))
-            strip.show()
-            time.sleep(5)
+        strip.setPixelColor(0, Color(0, 0, 0))
+        
     def turn_light_on(self):
-        GPIO.output(PIN, True) #turn light on
+        strip.setPixelColor(0, Color(255, 0, 0))
