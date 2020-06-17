@@ -21,6 +21,7 @@ class MQTTClient(object):
         self.client.on_connect = self._on_connect
         self.client.on_message = self._on_message
         self.client.on_subscribe = self._on_subscribe
+        self.client.on_publish = self._on_publish
 
     def _on_connect(self, client, userdata, flags, rc):
         print("Connected successfully with result code " + str(rc))
@@ -28,6 +29,9 @@ class MQTTClient(object):
         #subscribe to person rec topic
         for topic in self.topics_to_subscribe:
             self.subscribe(topic + "/#")
+
+    def _on_publish(self, client, userdata, result):
+        print("published with result code:", result)
 
     def _on_message(self, client, userdata, message):
         # Convert message payload to string

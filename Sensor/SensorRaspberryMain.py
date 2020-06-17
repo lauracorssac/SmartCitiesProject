@@ -27,7 +27,7 @@ from ImageRecognitionManager import ImageRecognitionManager
 from PIRManager import PIRManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
-recognition_turned_on = False
+recognition_turned_on = True
 
 def personWasDetected(results):
     for result in results:
