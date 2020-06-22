@@ -12,4 +12,4 @@ class SensorRaspberryMessageManager(object):
         print("on message topic: ", message.topic)
 
         if message.topic == "action/shutDown":
-            sys.exit(0)
+            raise ValueError("program ended")
