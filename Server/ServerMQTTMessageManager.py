@@ -1,5 +1,8 @@
 import json
 import sys
+import os
+sys.path.insert(1, os.path.dirname(os.getcwd()))
+from AI.Solver import Solver
 
 class ServerMQTTMessageManager(object):
 
@@ -7,6 +10,7 @@ class ServerMQTTMessageManager(object):
 
         self.client = client
         self.client.message_handler = self.on_message_handler
+        self.solver = Solver()
 
     def on_message_handler(self, message):
         # Convert message payload to string
@@ -21,7 +25,12 @@ class ServerMQTTMessageManager(object):
             print("message value:", new_value)
 
             if new_value == 1.0:
-                action_message = '{"action": "%.2f"}' % 1.0
-                self.client.publish("action/buzzer", action_message, 0, False)
-                self.client.publish("action/shutDown", action_message, 0, False)
-                sys.exit(0)
+
+                response = self.solver.request(new_value)
+                print("response", response)
+                return
+                
+                #action_message = '{"action": "%.2f"}' % 1.0
+                #self.client.publish("action/buzzer", action_message, 0, False)
+                #self.client.publish("action/shutDown", action_message, 0, False)
+                #raise ValueError("shut down")
