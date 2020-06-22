@@ -9,7 +9,8 @@
     "publish": [],
     "subscribe": [
       "action/buzzer",
-      "action/shutDown"
+      "action/shutDown",
+      "action/light"
      ]
   }
 }
