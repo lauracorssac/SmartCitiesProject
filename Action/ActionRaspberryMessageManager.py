@@ -24,7 +24,6 @@ class ActionRaspberryMessageManager(object):
 
             if new_value == 1.0:
                 self.buzzer_manager.buzzAct()
-                self.light_manager.turn_light_on()
 
         if message.topic == "action/light":
             message_string = message.payload.decode(encoding='UTF-8')

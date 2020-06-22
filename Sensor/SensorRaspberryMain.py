@@ -73,6 +73,7 @@ def main():
     image_rec_manager = ImageRecognitionManager()
     pir_manager = PIRManager(motion_recognized_callback)
     message_manager = SensorRaspberryMessageManager(mqtt_client)
+    start_time = 0.0
 
     while True:
         try:
@@ -85,15 +86,23 @@ def main():
                 results = image_rec_manager.detect_objects(interpreter, image, args.threshold)
                 if personWasDetected(results) and recognition_turned_on:
                     print("PERSON WAS DETECTED")
+                    if start_time == 0.0:
+                        start_time = time.time()
                     message = '{"value": "%.2f"}' % 1.0
                     mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
                 else:
+                    start_time = 0.0
                     print("PERSON NOT DETECTED")
                     message = '{"value": "%.2f"}' % 0.0
                     mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
 
                 stream.seek(0)
                 stream.truncate()
+
+                end_time = time.time()
+                diff = end_time = start_time
+                message = '{"value": "%d"}' % diff
+                mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
 
         except:
             print("ending program")

@@ -12,6 +12,8 @@ class ServerMQTTMessageManager(object):
         self.client.message_handler = self.on_message_handler
         self.solver = Solver()
         self.old_value = 0.0
+        self.old_time = 0
+        self.time_changed = False
 
     def on_message_handler(self, message):
         # Convert message payload to string
@@ -23,12 +25,12 @@ class ServerMQTTMessageManager(object):
             msg_json = json.loads(message_string)
 
             new_value = float(msg_json["value"])
-            print("message value:", new_value)
+            print("person rec value:", new_value)
 
             #executes post request only when a change in the state is detected 
-            if self.old_value != new_value: #TODO: USE THE VALUE
+            if self.old_value != new_value or self.time_changed:
                 print("change of state detected, starting http")
-                response = self.solver.request(new_value)
+                response = self.solver.request(new_value, self.old_time)
                 if "result" in response and "plan" in response["result"]:
                     plan = response["result"]["plan"]
                     for action in plan:
@@ -38,23 +40,39 @@ class ServerMQTTMessageManager(object):
                             if len(action_contents) >= 3:
                                 action_name = action_contents[0]
                                 action_object = action_contents[2]
+
                                 if action_name == "turn-actuator-on":
                                     if action_object == "buzzer-obj":
                                         self.turn_buzzer_on()
                                     elif action_object == "light-obj":
                                         self.turn_lights_on()
+                                
+                                elif action_name == "turn-system-off":
+                                    self.shut_down()
 
             self.old_value = new_value
+
+        if message.topic == "sensor/time":
+            message_string = message.payload.decode(encoding='UTF-8')
+            msg_json = json.loads(message_string)
+            new_value = int(msg_json["value"])
+            print("time value:", new_value)
+            if self.old_time != new_value:
+                self.time_changed = True
+                self.old_time = new_value
+
+
+    def shut_down(self):
+        action_message = '{"action": "%.2f"}' % 1.0
+        self.client.publish("action/shutDown", action_message, 0, False)
+        raise ValueError("shut down")
 
     def turn_buzzer_on(self): 
         print("turning buzzer on")
         action_message = '{"action": "%.2f"}' % 1.0
         self.client.publish("action/buzzer", action_message, 0, False)
-        #self.client.publish("action/shutDown", action_message, 0, False)
-        #raise ValueError("shut down")
 
     def turn_lights_on(self): 
         print("turning lights on")
         action_message = '{"action": "%.2f"}' % 1.0
         self.client.publish("action/light", action_message, 0, False)
-        #raise ValueError("shut down")
