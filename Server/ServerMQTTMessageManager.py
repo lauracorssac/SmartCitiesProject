@@ -26,7 +26,7 @@ class ServerMQTTMessageManager(object):
             print("message value:", new_value)
 
             #executes post request only when a change in the state is detected 
-            if old_value != new_value: #TODO: USE THE VALUE
+            if self.old_value != new_value: #TODO: USE THE VALUE
                 print("change of state detected, starting http")
                 response = self.solver.request(new_value)
                 if "result" in response and "plan" in response["result"]:
@@ -44,7 +44,7 @@ class ServerMQTTMessageManager(object):
                                     elif action_object == "light-obj":
                                         self.turn_lights_on()
 
-            old_value = new_value
+            self.old_value = new_value
 
     def turn_buzzer_on(self): 
         print("turning buzzer on")

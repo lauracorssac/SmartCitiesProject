@@ -27,6 +27,7 @@ def main():
             print("ending program")
             mqtt_client.finalize()
             iot_manager.stop()
+            break
 
 
 if __name__ == '__main__':
