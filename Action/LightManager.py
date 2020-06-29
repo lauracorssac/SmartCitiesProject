@@ -26,3 +26,7 @@ class LightManager(object):
     def turn_light_on(self):
         self.strip.setPixelColor(0, Color(0, 255, 0))
         self.strip.show()
+
+    def turn_light_off(self):
+        self.strip.setPixelColor(0, Color(0, 0, 0))
+        self.strip.show()

@@ -5,35 +5,35 @@
 (:requirements :strips :fluents :typing :negative-preconditions)
 
 (:types 
-person system - object
-buzzer light_bulb - actuator 
-time
+person time - object
+buzzer light_bulb program - system_component
 )
 
 ;(:constants )
 
 (:predicates
 (is-recognized ?p - person )
-(is-on ?a - actuator)
-(is-on-system ?s - system)
+(is-on ?s - system_component)
 )
 
 (:functions
     (time-passed ?v - time)
 )
 
-
-(:action turn-actuator-on
-    :parameters (?p - person ?a - actuator)
-    :precondition (and (is-recognized ?p) (not (is-on ?a) ) )
-    :effect ( is-on ?a )
+(:action turn-system-component-on
+    :parameters (?person - person ?sc - system_component)
+    :precondition (is-recognized ?person)
+    :effect ( is-on ?sc )
 )
 
-(:action turn-system-off
-    :parameters (?v - time ?s - system)
-    :precondition ( = (time-passed ?v) 10)
-    :effect (not ( is-on-system ?s ))
 
+
+
+
+(:action turn-system-component-off
+    :parameters (?time - time ?sc - system_component )
+    :precondition (and ( > (time-passed ?time) 30) (is-on ?sc) )
+    :effect (not ( is-on ?sc ))
 )
 
 )

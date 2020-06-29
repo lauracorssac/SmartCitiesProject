@@ -6,8 +6,15 @@ PD = 15 #DATA PIN
 class BuzzerManager(object):
 
     def __init__(self):
+        self.is_on = False
         self.buzzer_setup()
         return
+
+    def turn_buzzer_on(self):
+        self.is_on = True
+        
+    def turn_buzzer_off(self):
+        self.is_on = False
 
     def buzzer_setup(self):
         GPIO.setup(PD, GPIO.OUT)
