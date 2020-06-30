@@ -6,9 +6,10 @@ from AI.Solver import Solver
 
 class ServerMQTTMessageManager(object):
 
-    def __init__(self, client):
+    def __init__(self, client, completion_handler):
 
         self.client = client
+        self.completion_handler = completion_handler
         self.client.message_handler = self.on_message_handler
         self.solver = Solver()
         self.person_detected = False
@@ -82,13 +83,13 @@ class ServerMQTTMessageManager(object):
             msg_json = json.loads(message_string)
             new_value = int(msg_json["value"])
             print("time value:", new_value)
-            self.time_waited = (new_value >= 30)
+            self.time_waited = (new_value >= 90)
 
 
     def shut_down(self):
         action_message = '{"action": "%.2f"}' % 1.0
         self.client.publish("action/shutDown", action_message, 0, False)
-        raise ValueError("shut down")
+        self.completion_handler()
 
     def turn_buzzer_on(self): 
         print("turning buzzer on")
