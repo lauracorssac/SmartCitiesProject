@@ -13,7 +13,7 @@ class Solver(object):
         print("request function help ")
         dir_name = os.path.dirname(os.getcwd())
         print(dir_name)
-        with open( dir_name + "/AI/Domain2.pddl", 'r') as domain_file, open( dir_name + "/AI/problem2.pddl", 'r') as problem_file:
+        with open( dir_name + "/AI/domain.pddl", 'r') as domain_file, open( dir_name + "/AI/problem.pddl", 'r') as problem_file:
             print("files opened")
             domain_string = domain_file.read()
             problem_string = problem_file.read()
