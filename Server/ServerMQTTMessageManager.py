@@ -13,10 +13,12 @@ class ServerMQTTMessageManager(object):
         self.solver = Solver()
         self.person_detected = False
         self.time_waited = False
+        self.get_actions()
 
     def get_actions(self):
 
-        response = self.solver.request()    
+        response = self.solver.request()
+        print("solver response", response)
         if "result" in response and "plan" in response["result"]:
             
             plan = response["result"]["plan"]
