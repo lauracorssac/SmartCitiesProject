@@ -11,7 +11,6 @@ class ActionRaspberryMessageManager(object):
         self.light_manager = light_manager
 
     def on_message_handler(self, message):
-        # Convert message payload to string
         print("on message topic: ", message.topic)
 
         if message.topic == "action/buzzer":
@@ -19,7 +18,6 @@ class ActionRaspberryMessageManager(object):
             msg_json = json.loads(message_string)
 
             new_value = float(msg_json["action"])
-            print("message value:", new_value)
 
             if new_value == 1.0:
                 self.buzzer_manager.turn_buzzer_on()
@@ -31,7 +29,6 @@ class ActionRaspberryMessageManager(object):
             msg_json = json.loads(message_string)
 
             new_value = float(msg_json["action"])
-            print("message value:", new_value)
 
             if new_value == 1.0:
                 self.light_manager.turn_light_on()

@@ -23,13 +23,11 @@ def main(argv):
     mqtt_client.start()
     manager = ServerMQTTMessageManager(mqtt_client, completion_handler)
 
-    while True:
-        if not should_end:
-            time.sleep(5)
-        else:
-            print("ending program")
-            mqtt_client.finalize()
-            return
+    while not should_end:
+        time.sleep(5)
+        
+    print("Ending program. Please wait.")
+    mqtt_client.finalize()
 
 # Call main function
 if __name__ == "__main__":
