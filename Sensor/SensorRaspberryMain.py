@@ -30,6 +30,11 @@ from Common.IoTGeneralManager import IoTGeneralManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
 recognition_turned_on = True
+should_end = False
+
+def completion_handler():
+    global should_end
+    should_end = True
 
 def personWasDetected(results):
     for result in results:
@@ -72,11 +77,11 @@ def main():
     iot_manager.start()
     image_rec_manager = ImageRecognitionManager()
     pir_manager = PIRManager(motion_recognized_callback)
-    message_manager = SensorRaspberryMessageManager(mqtt_client)
+    message_manager = SensorRaspberryMessageManager(mqtt_client, completion_handler)
     start_time = 0.0
 
     while True:
-        try:
+        if not should_end:
             if recognition_turned_on:
                 print("recognition turned on")
                 stream = io.BytesIO()
@@ -91,25 +96,26 @@ def main():
                     message = '{"value": "%.2f"}' % 1.0
                     mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
                 else:
-                    start_time = 0.0
+                    #start_time = 0.0
                     print("PERSON NOT DETECTED")
                     message = '{"value": "%.2f"}' % 0.0
                     mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
 
                 stream.seek(0)
                 stream.truncate()
+                
+                if start_time != 0:
+                    end_time = time.time()
+                    diff = end_time - start_time
+                    message = '{"value": "%d"}' % diff
+                    print("time measured = ", diff)
+                    mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
 
-                end_time = time.time()
-                diff = end_time = start_time
-                message = '{"value": "%d"}' % diff
-                mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
-
-        except:
+        else:
             print("ending program")
-            error = sys.exc_info()
-            print ('Error:', str(error))
             break
 
+    print("stopping main components")
     iot_manager.stop()
     mqtt_client.finalize()
     camera.close()
