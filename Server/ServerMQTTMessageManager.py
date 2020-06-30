@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.insert(1, os.path.dirname(os.getcwd()))
 from AI.Solver import Solver
+from collections import defaultdict
 
 class ServerMQTTMessageManager(object):
 
@@ -18,21 +19,21 @@ class ServerMQTTMessageManager(object):
 
         self.server_actions = {
             "turn-component-on": {
-                "buzzerobj": self.turn_buzzer_on(),
-                "lightobj": self.turn_lights_on()
+                "buzzerobj": self.turn_buzzer_on,
+                "lightobj": self.turn_lights_on
             },
             "turn-actuator-off": {
-                "buzzerobj": self.turn_buzzer_off(),
-                "lightobj": self.turn_lights_off()
+                "buzzerobj": self.turn_buzzer_off,
+                "lightobj": self.turn_lights_off
             },
-            "wait-for-person": {
-                "boulglar": self.wait_for_person(),
-            }
+             "wait-for-person": {
+                "bouglar": self.wait_for_person
+            },
             "wait-for-while": {
-                "timeobj": self.wait_for_while()
-            }
+                "bouglar": self.wait_for_while
+            },
             "turn-algorithm-off": {
-                "algorithmobj": self.shut_down()
+                "algorithmobj": self.shut_down
             }
         }
 
@@ -44,11 +45,10 @@ class ServerMQTTMessageManager(object):
         if "result" in response and "plan" in response["result"]:
             
             plan = response["result"]["plan"]
-            action_cursor = 0
             
-            while action_cursor < len(plan):
-                action = plan[action_cursor]
-                print("current action", action)
+            while self.action_cursor < len(plan):
+                action = plan[self.action_cursor]
+                print("current action", self.action_cursor)
                 if "name" in action: 
                     name = action["name"][1:-1]
                     action_contents = name.split(" ")
@@ -56,7 +56,7 @@ class ServerMQTTMessageManager(object):
                     if len(action_contents) >= 2:
                         action_name = action_contents[0]
                         action_object = action_contents[1]
-                        self.server_actions[action_name][action_object]
+                        self.server_actions[action_name][action_object]()
 
     def on_message_handler(self, message):
         print("on message topic: ", message.topic)
