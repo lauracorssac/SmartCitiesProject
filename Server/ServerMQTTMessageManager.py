@@ -25,42 +25,43 @@ class ServerMQTTMessageManager(object):
             action_cursor = 0
             
             while action_cursor < len(plan):
-                
+                print("action cursor", action_cursor)
                 action = plan[action_cursor]
                 if "name" in action: 
                     name = action["name"][1:-1]
                     action_contents = name.split(" ")
                     
-                    if len(action_contents) >= 3:
+                    if len(action_contents) >= 2:
                         action_name = action_contents[0]
+                        print("action name = ", action_name)
                         action_object = action_contents[1]
+                        print("action object = ", action_object)
 
-                        if action_name == "turn-component-on":
-                            if action_object == "buzzerobj":
-                                self.turn_buzzer_on()
-                            elif action_object == "lightobj":
-                                self.turn_lights_on()
+                    if action_name == "turn-component-on":
+                        if action_object == "buzzerobj":
+                            self.turn_buzzer_on()
+                        elif action_object == "lightobj":
+                            self.turn_lights_on()
+                        action_cursor += 1
+
+                    elif action_name == "turn-actuator-off":
+                        if action_object == "buzzerobj":
+                            self.turn_buzzer_off()
+                        elif action_object == "lightobj":
+                            self.turn_lights_off()
+                        action_cursor += 1
+
+                    elif action_name == "wait-for-person":
+                        if self.person_detected:
                             action_cursor += 1
 
-                        elif action_name == "turn-actuator-off":
-                            if action_object == "buzzerobj":
-                                self.turn_buzzer_off()
-                            elif action_object == "lightobj":
-                                self.turn_lights_off()
+                    elif action_name == "wait-for-while":
+                        if self.time_waited:
                             action_cursor += 1
 
-                        elif action_name == "wait-for-person":
-                            if self.person_detected:
-                                action_cursor += 1
-
-                        elif action_name == "wait-for-while":
-                            if self.time_waited:
-                                action_cursor += 1
-
-                        
-                        elif action_name == "turn-algorithm-off":
-                            self.shut_down()
-                            action_cursor += 1
+                    elif action_name == "turn-algorithm-off":
+                        self.shut_down()
+                        action_cursor += 1
 
     def on_message_handler(self, message):
         # Convert message payload to string
