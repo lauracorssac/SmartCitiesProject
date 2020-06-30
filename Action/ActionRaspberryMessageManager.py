@@ -3,8 +3,9 @@ import sys
 
 class ActionRaspberryMessageManager(object):
 
-    def __init__(self, client, light_manager, buzzer_manager):
+    def __init__(self, client, light_manager, buzzer_manager, completion_handler):
         self.client = client
+        self.completion_handler = completion_handler
         self.client.message_handler = self.on_message_handler
         self.buzzer_manager = buzzer_manager
         self.light_manager = light_manager
@@ -39,4 +40,4 @@ class ActionRaspberryMessageManager(object):
 
 
         if message.topic == "action/shutDown":
-            raise ValueError("program ended")
+            self.completion_handler()
