@@ -1,7 +1,7 @@
 {
 
   "config": {
-    "brokerHost":"192.168.0.100",
+    "brokerHost":"193.196.54.152",
     "brokerPort":"1883",
     "id": "server_id_"
   },
