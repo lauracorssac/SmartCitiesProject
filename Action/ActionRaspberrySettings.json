@@ -8,9 +8,7 @@
   "topics": {
     "publish": [],
     "subscribe": [
-      "action/buzzer",
-      "action/shutDown",
-      "action/light"
+      "action/buzzer"
      ]
   }
 }

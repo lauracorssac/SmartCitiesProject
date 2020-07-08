@@ -24,17 +24,11 @@ sys.path.insert(1, os.path.dirname(os.getcwd()))
 
 from Common.MQTTClientSerializer import MQTTClientSerializer
 from ImageRecognitionManager import ImageRecognitionManager
-from SensorRaspberryMessageManager import SensorRaspberryMessageManager
 from PIRManager import PIRManager
 from Common.IoTGeneralManager import IoTGeneralManager
 
 camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
 recognition_turned_on = True
-should_end = False
-
-def completion_handler():
-    global should_end
-    should_end = True
 
 def personWasDetected(results):
     for result in results:
@@ -77,38 +71,40 @@ def main():
     iot_manager.start()
     image_rec_manager = ImageRecognitionManager()
     pir_manager = PIRManager(motion_recognized_callback)
-    message_manager = SensorRaspberryMessageManager(mqtt_client, completion_handler)
     start_time = 0.0
 
-    while not should_end:
-        if recognition_turned_on:
-            print("recognition turned on")
-            stream = io.BytesIO()
-            capture = camera.capture(stream, format='jpeg', use_video_port=True)
-            stream.seek(0)
-            image = Image.open(stream).convert('RGB').resize((input_width, input_height), Image.ANTIALIAS)
-            results = image_rec_manager.detect_objects(interpreter, image, args.threshold)
-            if personWasDetected(results) and recognition_turned_on:
-                print("PERSON WAS DETECTED")
-                if start_time == 0.0:
-                    start_time = time.time()
-                message = '{"value": "%.2f"}' % 1.0
-                mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
-            else:
-                #start_time = 0.0
-                print("PERSON NOT DETECTED")
-                message = '{"value": "%.2f"}' % 0.0
-                mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
+    while True:
+        try:
+            if recognition_turned_on:
+                print("recognition turned on")
+                stream = io.BytesIO()
+                capture = camera.capture(stream, format='jpeg', use_video_port=True)
+                stream.seek(0)
+                image = Image.open(stream).convert('RGB').resize((input_width, input_height), Image.ANTIALIAS)
+                results = image_rec_manager.detect_objects(interpreter, image, args.threshold)
+                if personWasDetected(results) and recognition_turned_on:
+                    print("PERSON WAS DETECTED")
+                    if start_time == 0.0:
+                        start_time = time.time()
+                    message = '{"value": "%.2f"}' % 1.0
+                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
+                else:
+                    #start_time = 0.0
+                    print("PERSON NOT DETECTED")
+                    message = '{"value": "%.2f"}' % 0.0
+                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
 
-            stream.seek(0)
-            stream.truncate()
-            
-            if start_time != 0:
-                end_time = time.time()
-                diff = end_time - start_time
-                message = '{"value": "%d"}' % diff
-                print("time measured = ", diff)
-                mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
+                stream.seek(0)
+                stream.truncate()
+                
+                if start_time != 0:
+                    end_time = time.time()
+                    diff = end_time - start_time
+                    message = '{"value": "%d"}' % diff
+                    print("time measured = ", diff)
+                    mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
+        except:
+            break
 
     print("ending program. Please wait.")
     iot_manager.stop()

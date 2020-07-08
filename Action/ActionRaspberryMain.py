@@ -11,13 +11,6 @@ from Common.IoTGeneralManager import IoTGeneralManager
 from BuzzerManager import BuzzerManager
 from LightManager import LightManager
 
-
-should_end = False
-
-def completion_handler():
-    global should_end
-    should_end = True
-
 def main():
 
     property_file_name = "ActionRaspberrySettings.json"
@@ -28,17 +21,19 @@ def main():
     mqtt_client.start()
     light_manager = LightManager()
     buzzer_manager = BuzzerManager()
-    manager = ActionRaspberryMessageManager(mqtt_client, light_manager, buzzer_manager, completion_handler)
+    manager = ActionRaspberryMessageManager(mqtt_client, light_manager, buzzer_manager)
 
-    while not should_end:
-        if buzzer_manager.is_on:
-            buzzer_manager.buzzAct()
-        time.sleep(5)
+    while True:
+        try:
+            if buzzer_manager.is_on:
+                buzzer_manager.buzzAct()
+            time.sleep(5)
+        except:
+            break
        
     print("Ending program. Please Wait.")
     mqtt_client.finalize()
     iot_manager.stop()
-
 
 if __name__ == '__main__':
     main()
