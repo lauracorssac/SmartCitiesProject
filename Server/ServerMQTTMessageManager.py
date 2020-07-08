@@ -18,22 +18,17 @@ class ServerMQTTMessageManager(object):
         self.action_cursor = 0
 
         self.server_actions = {
-            "turn-component-on": {
-                "buzzerobj": self.turn_buzzer_on,
-                "lightobj": self.turn_lights_on
+            "turn-actuator-on": {
+                "buzzerobj": self.turn_buzzer_on
             },
             "turn-actuator-off": {
-                "buzzerobj": self.turn_buzzer_off,
-                "lightobj": self.turn_lights_off
+                "buzzerobj": self.turn_buzzer_off
             },
              "wait-for-person": {
-                "bouglar": self.wait_for_person
+                "burglar": self.wait_for_person
             },
             "wait-for-while": {
-                "bouglar": self.wait_for_while
-            },
-            "turn-algorithm-off": {
-                "algorithmobj": self.shut_down
+                "burglar": self.wait_for_while
             }
         }
 
@@ -80,34 +75,16 @@ class ServerMQTTMessageManager(object):
             # waits for 90 seconds
             self.time_waited = (new_value >= 90)
 
-    def shut_down(self):
-        action_message = '{"action": "%.2f"}' % 1.0
-        self.client.publish("action/shutDown", action_message, 0, False)
-        self.completion_handler()
-        self.action_cursor += 1
-
     def turn_buzzer_on(self): 
         print("turning buzzer on")
         action_message = '{"action": "%.2f"}' % 1.0
         self.client.publish("action/buzzer", action_message, 0, False)
         self.action_cursor += 1
 
-    def turn_lights_on(self): 
-        print("turning lights on")
-        action_message = '{"action": "%.2f"}' % 1.0
-        self.client.publish("action/light", action_message, 0, False)
-        self.action_cursor += 1
-
     def turn_buzzer_off(self): 
         print("turning buzzer off")
         action_message = '{"action": "%.2f"}' % 0.0
         self.client.publish("action/buzzer", action_message, 0, False)
-        self.action_cursor += 1
-
-    def turn_lights_off(self): 
-        print("turning lights off")
-        action_message = '{"action": "%.2f"}' % 0.0
-        self.client.publish("action/light", action_message, 0, False)
         self.action_cursor += 1
 
     def wait_for_person(self):
