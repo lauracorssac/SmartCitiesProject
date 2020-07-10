@@ -3,6 +3,7 @@ import picamera
 from PIL import Image
 import tensorflow as tf
 import time
+import io
 
 class ImageRecognitionManager(object):
 

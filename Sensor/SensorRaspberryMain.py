@@ -84,6 +84,8 @@ def main():
                     print("time measured = ", diff)
                     message_manager.send_time(diff)
         except:
+            error = sys.exc_info()
+            print ('Error:', str(error))
             break
 
     print("ending program. Please wait.")
