@@ -69,11 +69,14 @@ def main():
                     if start_time == 0.0:
                         start_time = time.time()
                     message_manager.send_person_rec_status(1.0)
+                    recognition_turned_on = False
+                    camera_manager.close_camera()
                 else:
                     camera_manager.close_camera()
                     print("PERSON NOT DETECTED")
                     message_manager.send_person_rec_status(0.0)
                     recognition_turned_on = False
+                    camera_manager.close_camera()
                 
                 if start_time != 0:
                     end_time = time.time()
