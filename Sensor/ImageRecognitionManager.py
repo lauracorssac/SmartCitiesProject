@@ -1,5 +1,4 @@
 import numpy as np
-import picamera
 from PIL import Image
 import tensorflow as tf
 import time
