@@ -1,7 +1,6 @@
 # python3
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+#from __future__ import absolute_import
+#from __future__ import division
 
 import argparse
 import io
@@ -10,31 +9,18 @@ import time
 import sys
 import os
 
-import picamera
-import subprocess
-
-from PIL import Image
-import tensorflow as tf
 from datetime import datetime
-
-CAMERA_WIDTH = 640
-CAMERA_HEIGHT = 480
 
 sys.path.insert(1, os.path.dirname(os.getcwd()))
 
 from Common.MQTTClientSerializer import MQTTClientSerializer
 from ImageRecognitionManager import ImageRecognitionManager
 from PIRManager import PIRManager
+from SensorMQTTMessageManager import SensorMQTTMessageManager
 from Common.IoTGeneralManager import IoTGeneralManager
+from CameraManager import CameraManager
 
-camera = picamera.PiCamera(resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30)
 recognition_turned_on = True
-
-def personWasDetected(results):
-    for result in results:
-        if result['class_id'] == 0:
-            return True
-    return False
 
  #function called when a notification of a new menu action is received by mbp client
 def motion_recognized_callback():
@@ -47,6 +33,8 @@ def motion_recognized_callback():
 def main():
 
     print("main fcuntion")
+    global recognition_turned_on
+    recognition_turned_on = False
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--model', help='File path of .tflite file.', required=False, default='detect.tflite')
@@ -57,59 +45,53 @@ def main():
     type=float,
     default=0.4)
     args = parser.parse_args()
-    # labels = load_labels(args.labels
-    interpreter = tf.lite.Interpreter(args.model)
-    interpreter.allocate_tensors()
-    _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
-
+   
     property_file_name = "SensorRaspberrySettings.json"
     serializer = MQTTClientSerializer()
     mqtt_client = serializer.initialize_from_json(property_file_name)
     mqtt_client.start()
+    message_manager = SensorMQTTMessageManager(mqtt_client)
 
     iot_manager = IoTGeneralManager()
     iot_manager.start()
-    image_rec_manager = ImageRecognitionManager()
+    image_rec_manager = ImageRecognitionManager(args.model, args.threshold)
     pir_manager = PIRManager(motion_recognized_callback)
+    camera_manager = CameraManager()
     start_time = 0.0
 
     while True:
         try:
             if recognition_turned_on:
+                camera_manager.open_camera()
                 print("recognition turned on")
-                stream = io.BytesIO()
-                capture = camera.capture(stream, format='jpeg', use_video_port=True)
-                stream.seek(0)
-                image = Image.open(stream).convert('RGB').resize((input_width, input_height), Image.ANTIALIAS)
-                results = image_rec_manager.detect_objects(interpreter, image, args.threshold)
-                if personWasDetected(results) and recognition_turned_on:
+                if image_rec_manager.analize_image(camera_manager.camera) and recognition_turned_on:
                     print("PERSON WAS DETECTED")
                     if start_time == 0.0:
                         start_time = time.time()
-                    message = '{"value": "%.2f"}' % 1.0
-                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
+                    message_manager.send_person_rec_status(1.0)
+                    recognition_turned_on = False
+                    camera_manager.close_camera()
                 else:
-                    #start_time = 0.0
+                    camera_manager.close_camera()
                     print("PERSON NOT DETECTED")
-                    message = '{"value": "%.2f"}' % 0.0
-                    mqtt_client.publish(topic="sensor/personRecognition", payload=message, qos=0, retain=False)
-
-                stream.seek(0)
-                stream.truncate()
+                    message_manager.send_person_rec_status(0.0)
+                    recognition_turned_on = False
+                    camera_manager.close_camera()
                 
                 if start_time != 0:
                     end_time = time.time()
                     diff = end_time - start_time
-                    message = '{"value": "%d"}' % diff
                     print("time measured = ", diff)
-                    mqtt_client.publish(topic="sensor/time", payload=message, qos=0, retain=False)
+                    message_manager.send_time(diff)
         except:
+            error = sys.exc_info()
+            print ('Error:', str(error))
             break
 
     print("ending program. Please wait.")
     iot_manager.stop()
     mqtt_client.finalize()
-    camera.close()
+    camera_manager.close_camera()
     return
 
 if __name__ == '__main__':

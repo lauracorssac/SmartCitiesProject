@@ -52,6 +52,9 @@ class ServerMQTTMessageManager(object):
                         action_name = action_contents[0]
                         action_object = action_contents[1]
                         self.server_actions[action_name][action_object]()
+                
+                if self.action_cursor == len(plan):
+                    self.action_cursor = 0
 
     def on_message_handler(self, message):
         print("on message topic: ", message.topic)
