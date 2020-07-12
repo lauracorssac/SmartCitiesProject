@@ -1,21 +1,36 @@
-import RPi.GPIO as GPIO
 import time
+import RPi.GPIO as GPIO
 
-PIN = 15 #DATA PIN
 
 class PIRManager(object):
 
-    def __init__(self, event_detected_callback):
-        self.event_detected_callback = event_detected_callback
-        self.setup()
+    def __init__(self, event_detected_callback, PIN):
+        self.event_callback = event_detected_callback
+        self.setup(PIN)
 
-    def setup(self):
-        GPIO.setup(PIN, GPIO.IN)
-        GPIO.setwarnings(False)
+    def setup(self, PIN):
         GPIO.setmode(GPIO.BCM)
-        GPIO.add_event_detect(PIN, GPIO.RISING, callback=self.event_detected, bouncetime=100)
+        GPIO.setup(PIN, GPIO.IN)
+        GPIO.add_event_detect(PIN, GPIO.RISING,
+                              callback=self.event_callback)
 
-    def event_detected(self):
-        print("motion was detected")
-        GPIO.cleanup() #stops receiving events after first motion was detected
-        self.event_detected_callback()
+
+#  FOLLOWING COMMENTED CODE IS AN EXEMPLE OF THIS CLASS USAGE
+
+def LIGHTS(pirPin):
+    """Turns LEDS On and Off"""
+    print("Motion Detected!")
+    time.sleep(2)
+
+print("Motion Sensor Alarm (CTRL+C to exit)")
+time.sleep(.2)
+print("Ready")
+
+obj = PIRManager(LIGHTS, 12)
+
+try:
+    while 1:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("Quit")
+    GPIO.cleanup()
