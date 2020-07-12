@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+from time import sleep
 
 
 class LightManager(object):
@@ -9,8 +10,9 @@ class LightManager(object):
     def setup(self, port_number):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(port_number, GPIO.OUT)
-        self.led = GPIO.PWM(port_number, 500)
+        self.led = GPIO.PWM(port_number, 600)
         self.led.start(0)
 
     def set_light_brightness(self, brightness_percentage):
         self.led.ChangeDutyCycle(brightness_percentage)
+

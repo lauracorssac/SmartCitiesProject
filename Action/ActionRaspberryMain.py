@@ -19,7 +19,7 @@ def main():
     serializer = MQTTClientSerializer()
     mqtt_client = serializer.initialize_from_json(property_file_name)
     mqtt_client.start()
-    light_manager = LightManager()
+    light_manager = LightManager(12)
     buzzer_manager = BuzzerManager()
     manager = ActionRaspberryMessageManager(mqtt_client, light_manager, buzzer_manager)
 
