@@ -17,20 +17,20 @@ class PIRManager(object):
 
 #  FOLLOWING COMMENTED CODE IS AN EXEMPLE OF THIS CLASS USAGE
 
-def LIGHTS(pirPin):
-    """Turns LEDS On and Off"""
-    print("Motion Detected!")
-    time.sleep(2)
-
-print("Motion Sensor Alarm (CTRL+C to exit)")
-time.sleep(.2)
-print("Ready")
-
-obj = PIRManager(LIGHTS, 20)
-
-try:
-    while 1:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Quit")
-    GPIO.cleanup()
+# def LIGHTS(pirPin):
+#     """Turns LEDS On and Off"""
+#     print("Motion Detected!")
+#     time.sleep(2)
+#
+# print("Motion Sensor Alarm (CTRL+C to exit)")
+# time.sleep(.2)
+# print("Ready")
+#
+# obj = PIRManager(LIGHTS, 20)
+#
+# try:
+#     while 1:
+#         time.sleep(1)
+# except KeyboardInterrupt:
+#     print("Quit")
+#     GPIO.cleanup()

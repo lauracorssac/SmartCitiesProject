@@ -1,5 +1,12 @@
 import spidev
-from time import sleep
+import sys
+import os
+import time
+sys.path.insert(1, os.path.dirname(os.getcwd()))
+from Common.MQTTClientSerializer import MQTTClientSerializer
+from SensorMQTTMessageManager import SensorMQTTMessageManager
+from Common.IoTGeneralManager import IoTGeneralManager
+
 
 
 class LightnessManager(object):
@@ -20,8 +27,17 @@ class LightnessManager(object):
         return percentage_of_light
 
 
-# CODE FOR TESTING LIGHT SENSOR
-obj = LightnessManager()
+property_file_name = "SensorRaspberrySettings.json"
+serializer = MQTTClientSerializer()
+mqtt_client = serializer.initialize_from_json(property_file_name)
+mqtt_client.start()
+message_manager = SensorMQTTMessageManager(mqtt_client)
+light_sensor = LightnessManager()
+
+
 while True:
-    print(obj.get_brightness_percentage())
-    sleep(1)
+    value = light_sensor.get_brightness_percentage()
+    print(value)
+    
+    message_manager.send_brightness(value)
+    time.sleep(5)
