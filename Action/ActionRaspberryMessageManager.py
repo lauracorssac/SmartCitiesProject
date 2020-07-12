@@ -22,3 +22,10 @@ class ActionRaspberryMessageManager(object):
                 self.buzzer_manager.turn_buzzer_on()
             elif new_value == 0.0:
                 self.buzzer_manager.turn_buzzer_off()
+
+        elif message.topic == "action/LED":
+            message_string = message.payload.decode(encoding='UTF-8')
+            msg_json = json.loads(message_string)
+            new_value = float(msg_json["action"])
+
+            self.light_manager.set_light_brightness(new_value)

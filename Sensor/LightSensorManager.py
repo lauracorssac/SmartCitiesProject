@@ -21,7 +21,7 @@ class LightnessManager(object):
 
 
 # CODE FOR TESTING LIGHT SENSOR
-# obj = LightnessManager()
-# while True:
-#     print(obj.get_brightness_percentage())
-#     sleep(1)
+obj = LightnessManager()
+while True:
+    print(obj.get_brightness_percentage())
+    sleep(1)

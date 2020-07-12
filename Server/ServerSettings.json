@@ -7,8 +7,9 @@
   },
   "topics": {
     "subscribe": [
-      "sensor/personRecognition", 
-      "sensor/time"
+      "sensor/personRecognition",
+      "sensor/time",
+      "sensor/brightness"
     ]
   }
 }

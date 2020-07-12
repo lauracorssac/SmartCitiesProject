@@ -38,21 +38,21 @@ class ServerMQTTMessageManager(object):
 
         response = self.solver.request()
         if "result" in response and "plan" in response["result"]:
-            
+
             plan = response["result"]["plan"]
-            
+
             while self.action_cursor < len(plan):
                 action = plan[self.action_cursor]
                 print("current action", self.action_cursor)
-                if "name" in action: 
+                if "name" in action:
                     name = action["name"][1:-1]
                     action_contents = name.split(" ")
-                    
+
                     if len(action_contents) >= 2:
                         action_name = action_contents[0]
                         action_object = action_contents[1]
                         self.server_actions[action_name][action_object]()
-                
+
                 if self.action_cursor == len(plan):
                     self.action_cursor = 0
 
@@ -70,21 +70,29 @@ class ServerMQTTMessageManager(object):
                 self.person_detected  = True
 
         # time measured by raspberry since person was detected
-        if message.topic == "sensor/time":
+        elif message.topic == "sensor/time":
             message_string = message.payload.decode(encoding='UTF-8')
             msg_json = json.loads(message_string)
             new_value = int(msg_json["value"])
-            
+
             # waits for 90 seconds
             self.time_waited = (new_value >= 90)
 
-    def turn_buzzer_on(self): 
+        # brightness measured by raspberry
+        elif message.topic == "sensor/brightness":
+            message_string = message.payload.decode(encoding='UTF-8')
+            msg_json = json.loads(message_string)
+            new_value = int(msg_json["value"])
+
+            self.update_led_brightness(130 - new_value)
+
+    def turn_buzzer_on(self):
         print("turning buzzer on")
         action_message = '{"action": "%.2f"}' % 1.0
         self.client.publish("action/buzzer", action_message, 0, False)
         self.action_cursor += 1
 
-    def turn_buzzer_off(self): 
+    def turn_buzzer_off(self):
         print("turning buzzer off")
         action_message = '{"action": "%.2f"}' % 0.0
         self.client.publish("action/buzzer", action_message, 0, False)
@@ -97,3 +105,8 @@ class ServerMQTTMessageManager(object):
     def wait_for_while(self):
         if self.time_waited:
             self.action_cursor += 1
+
+    def update_led_brightness(self, new_value):
+        print("Updating LED brightness")
+        action_message = '{"action": "%.2f"}' % new_value
+        self.client.publish("action/LED", action_message, 0, False)

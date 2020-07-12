@@ -26,7 +26,7 @@ print("Motion Sensor Alarm (CTRL+C to exit)")
 time.sleep(.2)
 print("Ready")
 
-obj = PIRManager(LIGHTS, 12)
+obj = PIRManager(LIGHTS, 20)
 
 try:
     while 1:
