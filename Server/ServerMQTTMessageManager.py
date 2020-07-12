@@ -43,7 +43,6 @@ class ServerMQTTMessageManager(object):
 
             while self.action_cursor < len(plan):
                 action = plan[self.action_cursor]
-                print("current action", self.action_cursor)
                 if "name" in action:
                     name = action["name"][1:-1]
                     action_contents = name.split(" ")
@@ -54,6 +53,9 @@ class ServerMQTTMessageManager(object):
                         self.server_actions[action_name][action_object]()
 
                 if self.action_cursor == len(plan):
+                    print("end of cycle")
+                    self.time_waited = False
+                    self.person_detected = False
                     self.action_cursor = 0
 
     def on_message_handler(self, message):
@@ -74,7 +76,7 @@ class ServerMQTTMessageManager(object):
             message_string = message.payload.decode(encoding='UTF-8')
             msg_json = json.loads(message_string)
             new_value = int(msg_json["value"])
-
+            print("new value time", new_value)
             # waits for 90 seconds
             self.time_waited = (new_value >= 90)
 
@@ -110,3 +112,4 @@ class ServerMQTTMessageManager(object):
         print("Updating LED brightness")
         action_message = '{"action": "%.2f"}' % new_value
         self.client.publish("action/LED", action_message, 0, False)
+        print("published")
