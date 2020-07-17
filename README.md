@@ -14,4 +14,4 @@ The folder `Server` contains the code for the Server of the system. It is respon
 
 When executing for the first time, before running the code execute the `install.sh` script in the respective forder like the following.
 
-- sh ./install.sh
+- ` sh ./install.sh `
