@@ -15,3 +15,13 @@ The folder `Server` contains the code for the Server of the system. It is respon
 When executing for the first time, before running the code execute the `install.sh` script in the respective forder like the following.
 
 - ` sh ./install.sh `
+
+## Considerations
+
+The feedback given by the professors is that the AI part has some mistakes on its idea and role in the project. Besides that, the project is fine! :)  
+
+## Authors
+Laura Corssac - [lauracorssac](https://github.com/lauracorssac) 
+
+Lúcio Franco - [lucio-lpf](https://github.com/lucio-lpf)
+
